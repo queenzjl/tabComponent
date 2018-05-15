@@ -55,50 +55,66 @@
     }
 
     Tab.prototype = {
-        //获取配置参数
-        getConfig: function() {
-            //拿一下tab elem节点上的data-config
-            var config = this.tab.attr('data-config');
-            //确保有配置参数
-            if (config && config != '') {
-                return $.parseJSON(config);
-            } else {
-                return null;
-            }
-        },
-        //切换tab驱动函数
-        invoke: function(current) {
-            //显示li
-            current.addClass('actived').siblings().removeClass('actived');
-            var index = current.index();
-            console.log(index)
-                //显示对应的内容区域
-            var effect = this.config.effect;
-            if (effect === 'fade') {
-                this.contentItems.eq(index).fadeIn().siblings().fadeOut();
-            } else if (effect === 'default' || effect !== 'fade') {
-                this.contentItems.eq(index).addClass('current').siblings().removeClass('current');
-            }
-            //注意，如果配置了自动切换，记得把当前的loop的值设置成当前tab的index
-            if (this.config.auto) {
-                this.loop = index;
-            }
-        },
-        //自动播放函数
-        autoPlay: function() {
-            var _this = this;
-            var tabItems = this.tabItems; //临时保存tab列表
-            var tabLength = this.tabItems.length; //tab的个数
-            var config = this.config;
-            this.timer = window.setInterval(function() {
-                _this.loop++;
-                if (_this.loop >= tabLength) {
-                    _this.loop = 0;
+            //获取配置参数
+            getConfig: function() {
+                //拿一下tab elem节点上的data-config
+                var config = this.tab.attr('data-config');
+                //确保有配置参数
+                if (config && config != '') {
+                    return $.parseJSON(config);
+                } else {
+                    return null;
                 }
-                tabItems.eq(_this.loop).trigger(config.triggerType);
-            }, config.auto)
+            },
+            //切换tab驱动函数
+            invoke: function(current) {
+                //显示li
+                current.addClass('actived').siblings().removeClass('actived');
+                var index = current.index();
+                console.log(index)
+                    //显示对应的内容区域
+                var effect = this.config.effect;
+                if (effect === 'fade') {
+                    this.contentItems.eq(index).fadeIn().siblings().fadeOut();
+                } else if (effect === 'default' || effect !== 'fade') {
+                    this.contentItems.eq(index).addClass('current').siblings().removeClass('current');
+                }
+                //注意，如果配置了自动切换，记得把当前的loop的值设置成当前tab的index
+                if (this.config.auto) {
+                    this.loop = index;
+                }
+            },
+            //自动播放函数
+            autoPlay: function() {
+                var _this = this;
+                var tabItems = this.tabItems; //临时保存tab列表
+                var tabLength = this.tabItems.length; //tab的个数
+                var config = this.config;
+                this.timer = window.setInterval(function() {
+                    _this.loop++;
+                    if (_this.loop >= tabLength) {
+                        _this.loop = 0;
+                    }
+                    tabItems.eq(_this.loop).trigger(config.triggerType);
+                }, config.auto)
+            }
         }
+        //初始化方法
+    Tab.init = function(tabs) {
+        var _this = this;
+        tabs.each(function() {
+            new _this($(this));
+        })
     }
+
+    //注册成jq方法
+    $.fn.extend({
+        tab: function() {
+            this.each(function() {
+                new Tab($(this));
+            })
+        }
+    })
     window.Tab = Tab;
 
 })(jQuery)
