@@ -55,8 +55,9 @@ body {
 
 .tab .content .content-item {
     display: none;
+    position: absolute;
 }
 
-.tab .content .content-item.current {
+.tab .content .current {
     display: block;
 }
