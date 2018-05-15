@@ -35,6 +35,23 @@
                 _this.invoke($(this));
             })
         }
+        //设置自动播放
+        if (config.auto) {
+            this.timer = null;
+            this.loop = 0;
+            this.autoPlay(); //自动播放
+
+            this.tab.hover(function() {
+                window.clearInterval(_this.timer);
+            }, function() {
+                _this.autoPlay();
+            })
+        }
+
+        //设置默认显示第几个tab
+        if (config.invoke > 1) {
+            this.invoke(this.tabItems.eq(config.invoke - 1));
+        }
     }
 
     Tab.prototype = {
@@ -49,7 +66,7 @@
                 return null;
             }
         },
-        //切换
+        //切换tab驱动函数
         invoke: function(current) {
             //显示li
             current.addClass('actived').siblings().removeClass('actived');
@@ -62,6 +79,24 @@
             } else if (effect === 'default' || effect !== 'fade') {
                 this.contentItems.eq(index).addClass('current').siblings().removeClass('current');
             }
+            //注意，如果配置了自动切换，记得把当前的loop的值设置成当前tab的index
+            if (this.config.auto) {
+                this.loop = index;
+            }
+        },
+        //自动播放函数
+        autoPlay: function() {
+            var _this = this;
+            var tabItems = this.tabItems; //临时保存tab列表
+            var tabLength = this.tabItems.length; //tab的个数
+            var config = this.config;
+            this.timer = window.setInterval(function() {
+                _this.loop++;
+                if (_this.loop >= tabLength) {
+                    _this.loop = 0;
+                }
+                tabItems.eq(_this.loop).trigger(config.triggerType);
+            }, config.auto)
         }
     }
     window.Tab = Tab;
